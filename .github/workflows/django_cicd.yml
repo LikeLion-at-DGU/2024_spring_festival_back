@@ -87,4 +87,4 @@ jobs:
           docker stop mua-dongguk-server
           docker rm mua-dongguk-server
           docker image rm ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.DOCKERHUB_REPONAME }}
-          docker run -d --net festival -v festival-media:/app/media -v festival-static:/app/static -e TZ=Asia/Seoul -p 8000:8000 --name mua-dongguk-server ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.DOCKERHUB_REPONAME }}
+          docker run -d -v /home/django/media:/app/media -v /home/django/static:/app/static -e TZ=Asia/Seoul -p 8000:8000 --name mua-dongguk-server ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.DOCKERHUB_REPONAME }}
