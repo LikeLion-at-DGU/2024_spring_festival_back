@@ -43,7 +43,11 @@ INSTALLED_APPS = [
     'rest_framework',
     
     # project app
-    'main',
+    'core',
+    'booth',
+    'notice',
+    'promo',
+
 ]
 
 MIDDLEWARE = [
