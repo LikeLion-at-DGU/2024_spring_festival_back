@@ -47,6 +47,8 @@ INSTALLED_APPS = [
     'booth',
     'notice',
     'promo',
+    'timetable',
+    
 
 ]
 
