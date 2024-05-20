@@ -39,10 +39,10 @@ class BoothLike(models.Model):
         blank=True,
         editable=False
     )
-    
+
     def __str__(self):
         return f'{self.booth}/{self.key}'
 
 class BoothImage(BaseImage):
     booth=models.ForeignKey(Booth, on_delete=models.CASCADE, related_name='boothimages')
-    image = models.ImageField(upload_to=booth_image_upload_path, blank=True, null=True)
+    image = models.ImageField(upload_to=image_upload_path, blank=True, null=True)

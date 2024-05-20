@@ -11,4 +11,7 @@ class Promotion(models.Model):
         return self.title
     
 class PromotionImage(BaseImage):
-    promotion = models.ForeignKey(Promotion, on_delete=models.CASCADE)
+    promotion = models.OneToOneField(Promotion, on_delete=models.CASCADE)
+
+class PromotionBannerImage(BaseImage):
+    promotion = models.OneToOneField(Promotion, on_delete=models.CASCADE)
