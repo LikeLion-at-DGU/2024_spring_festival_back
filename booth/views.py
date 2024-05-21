@@ -19,19 +19,22 @@ DEPLOY = config('DJANGO_DEPLOY', default=False, cast=bool)
 
 class BoothFilter(filters.FilterSet):
     type = filters.MultipleChoiceFilter(field_name='type', choices=TYPE_CHOICES)
-    date = filters.CharFilter(method='filter_by_date_range')
+    date = filters.CharFilter(method='filter_by_date')
 
     class Meta:
         model = Booth
         fields = ['location', 'type', 'date']
 
-    def filter_by_date_range(self, queryset, name, value):
+    def filter_by_date(self, queryset, name, value):
         try:
+            # 입력된 날짜를 int로 변환
             day = int(value)
 
+            # 입력된 일자에 해당하는 부스를 필터링
             queryset = queryset.filter(
-                Q(start_at__day__lte=day) & Q(end_at__day__gte=day)
-            )
+                operation_times__date__day=day,
+            ).distinct()
+
             return queryset
         
         except ValueError:
@@ -51,6 +54,20 @@ class BoothViewSet(viewsets.GenericViewSet, mixins.ListModelMixin, mixins.Retrie
         if self.action == 'list':
             return BoothListSerializer
         return BoothSerializer
+    
+    def list(self, request, *args, **kwargs):
+        date = request.query_params.get('date')
+        queryset = self.filter_queryset(self.get_queryset())
+
+        serializer = self.get_serializer(queryset, many=True, context={'request': request, 'date': date})
+        return Response(serializer.data)
+
+
+    def get(self, request, *args, **kwargs):
+        date = request.query_params.get('date')
+        instance = self.get_object()
+        serializer = self.get_serializer(instance, context={'request': request, 'date': date})
+        return Response(serializer.data)
     
     # 좋아요
     @action(methods=['POST', 'DELETE'], detail=True)

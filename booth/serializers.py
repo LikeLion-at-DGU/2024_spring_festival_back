@@ -1,28 +1,54 @@
+from datetime import datetime
 from rest_framework import serializers
 from.models import Booth, BoothImage, BoothLike
-from datetime import datetime, date
+from django.core.exceptions import ObjectDoesNotExist
 
-def trans_datetime_to_str(instance):
-    start_at = instance.start_at
-    end_at = instance.end_at
+def trans_datetime_to_str(self, instance):
+    operation_times = instance.operation_times.all()
+    if not operation_times:
+        return ""
 
-    # 요일 str
-    days = ['월', '화', '수', '목', '금', '토', '일']
-    start_day = start_at.weekday()
-    end_day = end_at.weekday()
+    # 요일 문자열로 변환
+    # 요일을 숫자로 매핑
+    days_map = ['월', '화', '수', '목', '금', '토', '일']
 
-    if start_day <= end_day:
-        day_range = days[start_day:end_day + 1]
+    # 요일별로 중복 없이 저장
+    days_set = set()
+    for op_time in operation_times:
+        day = days_map[op_time.date.weekday()]
+        days_set.add(day)
+
+    sorted_days = sorted(days_set, key=lambda x: days_map.index(x))
+    days_str = ', '.join(sorted_days)
+
+    date = self.context.get('date')
+    
+    # 운영시간 문자열로 변환
+    # 파라미터로 전달된 date 값으로 운영시간을 찾음
+    # date 파라미터를 받지 못했다면 오늘 날짜로 탐색
+    if date:
+        target_date = int(date)
     else:
-        day_range = days[start_day:] + days[:end_day + 1]
+        target_date = int(datetime.today().day)
 
-    day_str = ', '.join(day_range)
+    # 입력된 날짜로 운영시간 탐색
+    try:
+        target_operation_time = operation_times.get(date__day=target_date)
+    except ValueError:
+        target_operation_time = None
+    except ObjectDoesNotExist:
+        target_operation_time = None
 
-    # 시간 str
-    start_time = start_at.strftime('%H:%M')
-    end_time = end_at.strftime('%H:%M')
+    # 문자열로 변환
+    if target_operation_time is not None:
+        start_time_str = target_operation_time.start_time.strftime('%H:%M')
+        end_time_str = target_operation_time.end_time.strftime('%H:%M')
+        times_str = f"{start_time_str} ~ {end_time_str}"
 
-    return f"({day_str}) {start_time} ~ {end_time}"
+    else:
+        times_str = "오늘은 운영하지 않습니다."
+
+    return f"({days_str}) {times_str}"
 
 class BoothImageSerializer(serializers.ModelSerializer):
     image = serializers.ImageField(use_url=True)
@@ -45,7 +71,8 @@ class BoothListSerializer(serializers.ModelSerializer):
         return None
     
     def get_during(self, instance):
-        return trans_datetime_to_str(instance)
+        print(self.context.get('date'))
+        return trans_datetime_to_str(self, instance)
     
     class Meta:
         model = Booth
@@ -69,7 +96,7 @@ class BoothSerializer(serializers.ModelSerializer):
         return None
 
     def get_during(self, instance):
-        return trans_datetime_to_str(instance)    
+        return trans_datetime_to_str(self, instance)
     
     def get_images(self, instance):
         request=self.context.get('request')
