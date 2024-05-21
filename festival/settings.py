@@ -42,6 +42,7 @@ INSTALLED_APPS = [
     
     # drf app
     'rest_framework',
+    'django_filters',
     
     # project app
     'core',
