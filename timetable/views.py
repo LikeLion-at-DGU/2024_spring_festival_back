@@ -35,11 +35,19 @@ class TimetableFilter(filters.FilterSet):
             return queryset.none()
         
 class ArtistFilter(filters.FilterSet):
-    date = filters.CharFilter(field_name='date', lookup_expr='icontains')
+    day = filters.CharFilter(method='filter_by_day')
+
+    def filter_by_day(self, queryset, name, value):
+        try:
+            day = int(value)
+            return queryset.filter(date__day=day)
+        
+        except ValueError:
+            return queryset.none()
 
     class Meta:
         model = Artist
-        fields = ['date']
+        fields = ['day']
 
 
 class TimetableViewSet(viewsets.GenericViewSet, mixins.ListModelMixin):
