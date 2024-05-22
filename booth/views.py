@@ -12,26 +12,30 @@ from rest_framework.response import Response
 
 from .models import Booth, BoothLike, TYPE_CHOICES, Comment
 
-from .serializers import BoothListSerializer, BoothSerializer, LikeSerializer, CommentSerializer
+from .serializers import BoothListSerializer, BoothSerializer, BoothLocationSerializer, LikeSerializer, CommentSerializer
+
 # Create your views here.
 
 DEPLOY = config('DJANGO_DEPLOY', default=False, cast=bool)
 
 class BoothFilter(filters.FilterSet):
     type = filters.MultipleChoiceFilter(field_name='type', choices=TYPE_CHOICES)
-    date = filters.CharFilter(method='filter_by_date_range')
+    date = filters.CharFilter(method='filter_by_date')
 
     class Meta:
         model = Booth
         fields = ['location', 'type', 'date']
 
-    def filter_by_date_range(self, queryset, name, value):
+    def filter_by_date(self, queryset, name, value):
         try:
+            # 입력된 날짜를 int로 변환
             day = int(value)
 
+            # 입력된 일자에 해당하는 부스를 필터링
             queryset = queryset.filter(
-                Q(start_at__day__lte=day) & Q(end_at__day__gte=day)
-            )
+                operation_times__date__day=day,
+            ).distinct()
+
             return queryset
         
         except ValueError:
@@ -50,7 +54,23 @@ class BoothViewSet(viewsets.GenericViewSet, mixins.ListModelMixin, mixins.Retrie
     def get_serializer_class(self):
         if self.action == 'list':
             return BoothListSerializer
+        elif self.action == 'location':
+            return BoothLocationSerializer
         return BoothSerializer
+    
+    def list(self, request, *args, **kwargs):
+        date = request.query_params.get('date')
+        queryset = self.filter_queryset(self.get_queryset())
+
+        serializer = self.get_serializer(queryset, many=True, context={'request': request, 'date': date})
+        return Response(serializer.data)
+
+
+    def get(self, request, *args, **kwargs):
+        date = request.query_params.get('date')
+        instance = self.get_object()
+        serializer = self.get_serializer(instance, context={'request': request, 'date': date})
+        return Response(serializer.data)
     
     # 좋아요
     @action(methods=['POST', 'DELETE'], detail=True)
@@ -85,6 +105,12 @@ class BoothViewSet(viewsets.GenericViewSet, mixins.ListModelMixin, mixins.Retrie
                 return response
             else:
                 return Response({'error': '해당 부스에 대한 좋아요를 찾을 수 없습니다.'}, status=status.HTTP_400_BAD_REQUEST)
+
+    @action(detail=True, methods=['GET'], url_path='location')
+    def location(self, request, pk=None):
+        booth = self.get_object()
+        serializer = self.get_serializer(booth)
+        return Response(serializer.data)
 
 class CommentViewSet(mixins.ListModelMixin, mixins.CreateModelMixin, mixins.DestroyModelMixin, mixins.RetrieveModelMixin, viewsets.GenericViewSet):
 
