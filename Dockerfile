@@ -11,4 +11,6 @@ COPY . .
 
 RUN pip install gunicorn
 
+RUN python manage.py collectstatic --noinput
+
 CMD ["sh", "-c", "python manage.py migrate && gunicorn --bind 0.0.0.0:8000 festival.wsgi:application"]
