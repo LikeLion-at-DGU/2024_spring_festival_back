@@ -89,6 +89,27 @@ WSGI_APPLICATION = 'festival.wsgi.application'
 # Database
 # https://docs.djangoproject.com/en/5.0/ref/settings/#databases
 
+# CORS 관련 추가
+CORS_ALLOW_ALL_ORIGINS = False
+CORS_ALLOW_CREDENTIALS = True
+
+CORS_ALLOWED_ORIGINS = [
+    'http://127.0.0.1',
+    'http://127.0.0.1:3000',
+    'http://127.0.0.1:5173',
+
+    'http://localhost',
+    'http://localhost:3000',
+    'http://localhost:5173',
+
+    'https://dgu-mua.site',
+    'https://dgu-mua.site:5173',
+    'https://dgu-mua.site:3000',
+    
+    'https://www.dgu-mua.site',
+    'https://www.dgu-mua.site:5173',
+    'https://www.dgu-mua.site:3000',
+]
 
 # 기본 설정 (개발환경)
 DATABASES = {
@@ -147,6 +168,7 @@ USE_TZ = False
 # https://docs.djangoproject.com/en/5.0/howto/static-files/
 
 STATIC_URL = 'static/'
+STATIC_ROOT = os.path.join(BASE_DIR, 'static')
 
 # Default primary key field type
 # https://docs.djangoproject.com/en/5.0/ref/settings/#default-auto-field
