@@ -66,7 +66,11 @@ jobs:
         file: ./Dockerfile
         push: true
         tags: ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.DOCKERHUB_REPONAME }}
-  
+        build-args: |
+            SECRET_KEY=${{ secrets.SECRET_KEY }}
+            DEBUG_VALUE=${{ secrets.DEBUG_VALUE }}
+            DJANGO_DEPLOY=${{ secrets.DJANGO_DEPLOY }}
+          
   # closed에 대한 server deploy
   CD:
     if: github.event.pull_request.merged == true

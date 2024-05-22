@@ -11,6 +11,7 @@ class NotificationImageSerializer(serializers.ModelSerializer):
 # 공지 리스트
 class NotificationListSerializer(serializers.ModelSerializer):
     thumbnail = serializers.SerializerMethodField()
+    short_description = serializers.SerializerMethodField()
 
     def get_thumbnail(self, instance):
         request = self.context.get('request')
@@ -18,10 +19,16 @@ class NotificationListSerializer(serializers.ModelSerializer):
         if notification_image:
             return request.build_absolute_uri(notification_image.image.url)
         return None
+    
+    def get_short_description(self, instance):
+        if len(instance.description) <= 23:
+            return instance.description
+        else:
+            return instance.description[:23] + "..."
 
     class Meta:
         model = Notification
-        fields = ['id', 'title', 'description', 'created_at', 'thumbnail']
+        fields = ['id', 'title', 'short_description','description', 'created_at', 'thumbnail']
 
 # 공지 디테일
 class NotificationDetailSerializer(serializers.ModelSerializer):

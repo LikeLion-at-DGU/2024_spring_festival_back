@@ -1,7 +1,10 @@
 from datetime import datetime
 from rest_framework import serializers
-from.models import Booth, BoothImage, BoothLike
+
+from.models import Booth, BoothImage, BoothLike, Comment
+from datetime import datetime, date
 from django.core.exceptions import ObjectDoesNotExist
+
 
 def trans_datetime_to_str(self, instance):
     operation_times = instance.operation_times.all()
@@ -145,8 +148,22 @@ class LikeSerializer(serializers.ModelSerializer):
     class Meta:
         model = BoothLike
         fields = [
-            'id',
-            'booth', 
-            'key'
-        ]
+                    'id',
+                    'booth', 
+                    'key'
+                ]
+
+class CommentSerializer(serializers.ModelSerializer):
+    writer = serializers.CharField()
+    password = serializers.CharField(write_only=True)
+    content = serializers.CharField()
+
+    def create(self, validated_data):
+        booth = Booth.objects.get(id=self.context.get("view").kwargs.get("id"))
+        validated_data["booth"] = booth
+        return super().create(validated_data)
+    
+    class Meta:
+        model = Comment
+        fields = ['id', 'writer', 'password','content', 'created_at']
 
