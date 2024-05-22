@@ -28,6 +28,7 @@ SECRET_KEY = config('SECRET_KEY')
 DEBUG = config('DEBUG_VALUE', default=True, cast=bool)
 
 ALLOWED_HOSTS = ['*']
+CSRF_TRUSTED_ORIGINS = ['https://www.mua-dongguk-server.site', 'https://mua-dongguk-server.site'] #CSRF 허용
 
 
 # Application definition
