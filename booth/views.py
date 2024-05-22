@@ -1,4 +1,4 @@
-import secrets
+import secrets, requests
 
 from decouple import config
 
@@ -10,9 +10,10 @@ from rest_framework import viewsets, mixins, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
 
-from .models import Booth, BoothLike, TYPE_CHOICES
+from .models import Booth, BoothLike, TYPE_CHOICES, Comment
 
-from .serializers import BoothListSerializer, BoothSerializer, BoothLocationSerializer, LikeSerializer
+from .serializers import BoothListSerializer, BoothSerializer, BoothLocationSerializer, LikeSerializer, CommentSerializer
+
 # Create your views here.
 
 DEPLOY = config('DJANGO_DEPLOY', default=False, cast=bool)
@@ -110,3 +111,21 @@ class BoothViewSet(viewsets.GenericViewSet, mixins.ListModelMixin, mixins.Retrie
         booth = self.get_object()
         serializer = self.get_serializer(booth)
         return Response(serializer.data)
+
+class CommentViewSet(mixins.ListModelMixin, mixins.CreateModelMixin, mixins.DestroyModelMixin, mixins.RetrieveModelMixin, viewsets.GenericViewSet):
+
+    serializer_class = CommentSerializer
+
+    def get_queryset(self, *args, **kwargs):
+        queryset = Comment.objects.filter(
+            booth__id=self.kwargs.get("id")
+        )
+        return queryset
+
+    def destroy(self, request, *args, **kwargs):
+        instance = self.get_object()
+        password = request.data.get('password')
+        if password == instance.password:
+            self.perform_destroy(instance)
+            return Response(status=status.HTTP_204_NO_CONTENT)
+        return Response(status=400)

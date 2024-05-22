@@ -57,5 +57,15 @@ class BoothLike(models.Model):
         return f'{self.booth}/{self.key}'
 
 class BoothImage(BaseImage):
-    booth = models.ForeignKey(Booth, on_delete=models.CASCADE, related_name='boothimages')
+    booth=models.ForeignKey(Booth, on_delete=models.CASCADE, related_name='boothimages')
     image = models.ImageField(upload_to=image_upload_path, blank=True, null=True)
+
+class Comment(models.Model):
+    booth=models.ForeignKey(Booth, on_delete=models.CASCADE, related_name='comments')
+    writer=models.CharField(max_length=20)
+    content=models.TextField()
+    password=models.CharField(max_length=10, null=False, blank=False)
+    created_at=models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return f'{self.booth}/{self.content[:20]}'

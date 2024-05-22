@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Booth, BoothOperationTime, BoothLike, BoothImage
+from .models import Booth, BoothOperationTime, BoothLike, BoothImage, Comment
 
 class BoothOperationTimeInline(admin.TabularInline):
     model = BoothOperationTime
@@ -23,3 +23,5 @@ class BoothAdmin(admin.ModelAdmin):
 admin.site.register(Booth, BoothAdmin)
 admin.site.register(BoothLike)
 admin.site.register(BoothImage)
+admin.site.register(Comment)
+
