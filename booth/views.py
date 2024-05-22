@@ -106,11 +106,11 @@ class BoothViewSet(viewsets.GenericViewSet, mixins.ListModelMixin, mixins.Retrie
             else:
                 return Response({'error': '해당 부스에 대한 좋아요를 찾을 수 없습니다.'}, status=status.HTTP_400_BAD_REQUEST)
 
-    @action(detail=True, methods=['GET'], url_path='location')
-    def location(self, request, pk=None):
-        booth = self.get_object()
-        serializer = self.get_serializer(booth)
-        return Response(serializer.data)
+    # @action(detail=True, methods=['GET'], url_path='location')
+    # def location(self, request, pk=None):
+    #     booth = self.get_object()
+    #     serializer = self.get_serializer(booth)
+    #     return Response(serializer.data)
     
     @action(detail=False, methods=['GET'], url_path='top3')
     def top3(self, request):

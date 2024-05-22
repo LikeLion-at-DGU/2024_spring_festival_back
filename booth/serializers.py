@@ -125,23 +125,25 @@ class BoothSerializer(serializers.ModelSerializer):
             'description',
             'operator',
             'location',
+            'latitude',
+            'longitude',
             'during',
             'like_cnt',
             'is_liked',
             'images',
         ]
 
-class BoothLocationSerializer(serializers.ModelSerializer):
+# class BoothLocationSerializer(serializers.ModelSerializer):
 
-    class Meta:
-        model = Booth
-        fields = [
-            'id',
-            'name',
-            'location',
-            'latitude',
-            'longitude'
-        ]
+#     class Meta:
+#         model = Booth
+#         fields = [
+#             'id',
+#             'name',
+#             'location',
+#             'latitude',
+#             'longitude'
+#         ]
 
 class LikeSerializer(serializers.ModelSerializer):
     
