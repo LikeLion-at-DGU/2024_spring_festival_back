@@ -1,4 +1,4 @@
-import secrets, requests
+import secrets
 
 from decouple import config
 
