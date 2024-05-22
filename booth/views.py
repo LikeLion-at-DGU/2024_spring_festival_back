@@ -12,7 +12,7 @@ from rest_framework.response import Response
 
 from .models import Booth, BoothLike, TYPE_CHOICES
 
-from .serializers import BoothListSerializer, BoothSerializer, LikeSerializer
+from .serializers import BoothListSerializer, BoothSerializer, BoothLocationSerializer, LikeSerializer
 # Create your views here.
 
 DEPLOY = config('DJANGO_DEPLOY', default=False, cast=bool)
@@ -53,6 +53,8 @@ class BoothViewSet(viewsets.GenericViewSet, mixins.ListModelMixin, mixins.Retrie
     def get_serializer_class(self):
         if self.action == 'list':
             return BoothListSerializer
+        elif self.action == 'location':
+            return BoothLocationSerializer
         return BoothSerializer
     
     def list(self, request, *args, **kwargs):
@@ -102,3 +104,9 @@ class BoothViewSet(viewsets.GenericViewSet, mixins.ListModelMixin, mixins.Retrie
                 return response
             else:
                 return Response({'error': '해당 부스에 대한 좋아요를 찾을 수 없습니다.'}, status=status.HTTP_400_BAD_REQUEST)
+
+    @action(detail=True, methods=['GET'], url_path='location')
+    def location(self, request, pk=None):
+        booth = self.get_object()
+        serializer = self.get_serializer(booth)
+        return Response(serializer.data)

@@ -126,8 +126,25 @@ class BoothSerializer(serializers.ModelSerializer):
             'images',
         ]
 
+class BoothLocationSerializer(serializers.ModelSerializer):
+
+    class Meta:
+        model = Booth
+        fields = [
+            'id',
+            'name',
+            'location',
+            'latitude',
+            'longitude'
+        ]
+
 class LikeSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = BoothLike
-        fields = ['id', 'booth', 'key']
+        fields = [
+            'id',
+            'booth', 
+            'key'
+        ]
+
