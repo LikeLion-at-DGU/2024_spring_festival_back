@@ -12,7 +12,7 @@ from rest_framework.response import Response
 
 from .models import Booth, BoothLike, TYPE_CHOICES, Comment
 
-from .serializers import BoothListSerializer, BoothSerializer, BoothLocationSerializer, LikeSerializer, CommentSerializer
+from .serializers import BoothListSerializer, BoothSerializer, LikeSerializer, CommentSerializer
 
 # Create your views here.
 
