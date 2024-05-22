@@ -24,4 +24,5 @@ urlpatterns = [
     path('api/v1/', include('booth.urls')),
     path('api/v1/', include('notice.urls')),
     path('api/v1/', include('promo.urls')),
+    path('api/v1/', include('timetable.urls')),
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)
