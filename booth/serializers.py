@@ -83,6 +83,7 @@ class BoothListSerializer(serializers.ModelSerializer):
             'id',
             'name',
             'thumbnail',
+            'description',
             'operator',
             'location',
             'latitude',
