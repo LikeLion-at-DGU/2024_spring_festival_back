@@ -59,7 +59,7 @@ class BoothViewSet(viewsets.GenericViewSet, mixins.ListModelMixin, mixins.Retrie
     
     def list(self, request, *args, **kwargs):
         date = request.query_params.get('date')
-        queryset = self.filter_queryset(self.get_queryset())
+        queryset = self.filter_queryset(self.get_queryset().order_by('-like_cnt'))
 
         serializer = self.get_serializer(queryset, many=True, context={'request': request, 'date': date})
         return Response(serializer.data)
@@ -110,3 +110,10 @@ class BoothViewSet(viewsets.GenericViewSet, mixins.ListModelMixin, mixins.Retrie
         booth = self.get_object()
         serializer = self.get_serializer(booth)
         return Response(serializer.data)
+    
+    @action(detail=False, methods=['GET'], url_path='top3')
+    def top3(self, request):
+        queryset = self.filter_queryset(self.get_queryset())
+        top3 = queryset.order_by('-like_cnt')[:3]
+        top3_serializer = BoothListSerializer(top3, many=True, context = {'request': request})
+        return Response( top3_serializer.data )

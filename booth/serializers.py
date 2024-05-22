@@ -82,6 +82,8 @@ class BoothListSerializer(serializers.ModelSerializer):
             'thumbnail',
             'operator',
             'location',
+            'latitude',
+            'longitude',
             'like_cnt',
             'during',
         ]
