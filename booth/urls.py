@@ -9,7 +9,7 @@ booth_router = routers.SimpleRouter(trailing_slash=False)
 booth_router.register('booth', BoothViewSet, basename='booth')
 
 comment_router = routers.SimpleRouter(trailing_slash=False)
-comment_router.register('comment', CommentViewSet, basename='comment')
+comment_router.register('comments', CommentViewSet, basename='comments')
 
 urlpatterns = [
     path('', include(booth_router.urls)),
