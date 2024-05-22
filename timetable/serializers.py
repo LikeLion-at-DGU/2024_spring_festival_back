@@ -93,3 +93,20 @@ class MusicImageSerializer(serializers.ModelSerializer):
     class Meta:
         model = MusicImage
         fields = '__all__'
+
+class nowPerformanceSerializer(serializers.ModelSerializer):
+    is_now = serializers.SerializerMethodField()
+    
+    def get_is_now(self, instance):
+        now = datetime.now()
+        return instance.start_at <= now <= instance.end_at
+
+    class Meta:
+        model = Performance
+        fields = [
+            'id',
+            'operator',
+            'location',
+            'is_now',
+        ]
+        

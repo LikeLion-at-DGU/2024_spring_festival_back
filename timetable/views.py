@@ -62,3 +62,13 @@ class ArtistViewSet(viewsets.GenericViewSet, mixins.ListModelMixin, mixins.Retri
 class MusicViewSet(viewsets.GenericViewSet, mixins.ListModelMixin):
     queryset = Music.objects.all()
     serializer_class = MusicSerializer
+
+class isNowPerformanceViewSet(viewsets.GenericViewSet, mixins.ListModelMixin):
+    
+    serializer_class = nowPerformanceSerializer
+    filter_backends = [DjangoFilterBackend]
+    filterset_class = TimetableFilter
+
+    def get_queryset(self):
+        queryset = Performance.objects.all()
+        return queryset.filter(start_at__lte=datetime.now(), end_at__gte=datetime.now())
