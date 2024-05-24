@@ -28,41 +28,17 @@ class NotificationListSerializer(serializers.ModelSerializer):
 
     class Meta:
         model = Notification
-        fields = ['id', 'title', 'short_description','description', 'created_at', 'thumbnail']
+        fields = ['id', 'title', 'short_description','description', 'created_at', 'thumbnail', 'insta_url']
 
-# 공지 디테일
-class NotificationDetailSerializer(serializers.ModelSerializer):
-    images = serializers.SerializerMethodField()
-
-    def get_images(self, instance):
-        request = self.context.get('request')
-        notification_images = instance.notificationimage_set.all().order_by('id')
-        return [request.build_absolute_uri(image.image.url) for image in notification_images]
-
-    class Meta:
-        model = Notification
-        fields = ['id', 'title', 'description', 'created_at', 'images']
-
-# # 공지
-# class NotificationSerializer(serializers.ModelSerializer):
+# 공지 디테일 <- 삭제 되었음.
+# class NotificationDetailSerializer(serializers.ModelSerializer):
 #     images = serializers.SerializerMethodField()
-    
+
 #     def get_images(self, instance):
 #         request = self.context.get('request')
 #         notification_images = instance.notificationimage_set.all().order_by('id')
-#         try:
-#             notification_image_serializer = NotificationImageSerializer(notification_images, many=True)
-#             outcome = []
-#             for data in notification_image_serializer.data:
-#                 image_url = request.build_absolute_uri(data['image'])
-#                 outcome.append(image_url)
+#         return [request.build_absolute_uri(image.image.url) for image in notification_images]
 
-#             return outcome
-#         except:
-#             return None
-        
 #     class Meta:
 #         model = Notification
 #         fields = ['id', 'title', 'description', 'created_at', 'images']
-
-        
