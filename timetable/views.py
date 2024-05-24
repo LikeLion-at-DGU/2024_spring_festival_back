@@ -73,7 +73,7 @@ class MusicViewSet(viewsets.GenericViewSet, mixins.ListModelMixin):
 
 class isNowPerformanceViewSet(viewsets.GenericViewSet, mixins.ListModelMixin):
     
-    serializer_class = nowPerformanceSerializer
+    serializer_class = NowPerformanceSerializer
     filter_backends = [DjangoFilterBackend]
     filterset_class = TimetableFilter
 
