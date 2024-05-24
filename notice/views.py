@@ -8,12 +8,12 @@ from rest_framework.decorators import action
 #     serializer_class = NotificationSerializer
 #     queryset = Notification.objects.all()
 
-class NotificationViewSet(viewsets.GenericViewSet, mixins.ListModelMixin, mixins.RetrieveModelMixin):
+class NotificationViewSet(viewsets.GenericViewSet, mixins.ListModelMixin):
     queryset = Notification.objects.all()
 
     def get_serializer_class(self):
         if self.action == 'list':
             return NotificationListSerializer
-        if self.action == 'retrieve':
-            return NotificationDetailSerializer
+        # if self.action == 'retrieve':
+        #     return NotificationDetailSerializer
         return super().get_serializer_class()
