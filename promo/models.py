@@ -11,7 +11,7 @@ class Promotion(models.Model):
         return self.title
     
 class PromotionImage(BaseImage):
-    promotion = models.OneToOneField(Promotion, on_delete=models.CASCADE)
+    promotion = models.OneToOneField(Promotion, on_delete=models.CASCADE, blank=True, null=True)
 
 class PromotionBannerImage(BaseImage):
-    promotion = models.OneToOneField(Promotion, on_delete=models.CASCADE)
+    promotion = models.OneToOneField(Promotion, on_delete=models.CASCADE, blank=True, null=True)

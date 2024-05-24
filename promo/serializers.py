@@ -21,10 +21,13 @@ class PromotionSerializer(serializers.ModelSerializer):
     
     def get_image(self, instance):
         request = self.context.get('request')
-        promotion_image = instance.promotionimage
-        if promotion_image:
-            return request.build_absolute_uri(promotion_image.image.url)
-        return None
+        try:
+            promotion_image = instance.promotionimage
+            promotion_image_serializer = PromotionImageSerializer(promotion_image)
+            image_url = request.build_absolute_uri(promotion_image_serializer.data["image"])
+            return image_url
+        except PromotionImage.DoesNotExist:
+            return None
 
     class Meta:
         model = Promotion
@@ -35,11 +38,13 @@ class PromotionBannerSerializer(serializers.ModelSerializer):
 
     def get_banner(self, instance):
         request = self.context.get('request')
-        promotion_banner_image = instance.promotionbannerimage
-        if promotion_banner_image:
-            return request.build_absolute_uri(promotion_banner_image.image.url)
-        return None
-    
+        try:
+            promotion_banner_image = instance.promotionbannerimage
+            promotion_banner_image_serializer = PromotionBannerImageSerializer(promotion_banner_image)
+            image_url = request.build_absolute_uri(promotion_banner_image_serializer.data["image"])
+            return image_url
+        except PromotionBannerImage.DoesNotExist:
+            return None
     class Meta:
         model = Promotion
         fields = ['id', 'insta_url', 'banner']
