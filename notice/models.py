@@ -12,4 +12,4 @@ class Notification(models.Model):
         return self.title
 
 class NotificationImage(BaseImage):
-    notification = models.ForeignKey(Notification, on_delete=models.CASCADE)
+    notification = models.ForeignKey(Notification, on_delete=models.CASCADE, blank=True, null=True)

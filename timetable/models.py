@@ -28,7 +28,7 @@ class Music(models.Model):
         return self.title
     
 class ArtistImage(BaseImage):
-    artist = models.ForeignKey(Artist, on_delete=models.CASCADE)
+    artist = models.ForeignKey(Artist, on_delete=models.CASCADE, blank=True, null=True)
 
 class MusicImage(BaseImage):
-    music = models.OneToOneField(Music, on_delete=models.CASCADE)
+    music = models.OneToOneField(Music, on_delete=models.CASCADE, blank=True, null=True)

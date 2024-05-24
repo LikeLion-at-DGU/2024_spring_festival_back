@@ -17,7 +17,8 @@ class NotificationListSerializer(serializers.ModelSerializer):
         request = self.context.get('request')
         notification_image = instance.notificationimage_set.first()
         if notification_image:
-            return request.build_absolute_uri(notification_image.image.url)
+            notification_image_serializer = NotificationImageSerializer(notification_image, context={'request': request})
+            return notification_image_serializer.data['image']
         return None
     
     def get_short_description(self, instance):

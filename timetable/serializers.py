@@ -13,7 +13,6 @@ def trans_datetime_to_str(instance):
     return f"{start_time} ~ {end_time}"
 
 class PerformanceSerializer(serializers.ModelSerializer):
-    
     during = serializers.SerializerMethodField()
     is_now = serializers.SerializerMethodField()
 
@@ -43,13 +42,15 @@ class ArtistSerializer(serializers.ModelSerializer):
 
     def get_musics(self, instance):
         musics = instance.music_set.all()
-        return MusicSerializer(musics, many=True, context = self.context).data
+        return MusicSerializer(musics, many=True, context=self.context).data
     
     def get_images(self, instance):
         request = self.context.get('request')
         images = instance.artistimage_set.all()
-        return [request.build_absolute_uri(image.image.url) for image in images]
-
+        artist_image_serializer = ArtistImageSerializer(images, many=True, context=self.context)
+        outcome = [request.build_absolute_uri(data["image"]) for data in artist_image_serializer.data]
+        return outcome if outcome else None
+    
     class Meta:
         model = Artist
         fields = [
@@ -58,7 +59,6 @@ class ArtistSerializer(serializers.ModelSerializer):
             'date',
             'musics',
             'images',
-        
         ]
 
 class MusicSerializer(serializers.ModelSerializer):
@@ -66,10 +66,12 @@ class MusicSerializer(serializers.ModelSerializer):
 
     def get_album(self, instance):
         request = self.context.get('request')
-        music_image = instance.musicimage
-        if music_image:
-            return request.build_absolute_uri(music_image.image.url)
-        return None
+        try:
+            music_image = instance.musicimage
+            music_image_serializer = MusicImageSerializer(music_image, context=self.context)
+            return request.build_absolute_uri(music_image_serializer.data["image"])
+        except MusicImage.DoesNotExist:
+            return None
 
     class Meta:
         model = Music
@@ -94,7 +96,7 @@ class MusicImageSerializer(serializers.ModelSerializer):
         model = MusicImage
         fields = '__all__'
 
-class nowPerformanceSerializer(serializers.ModelSerializer):
+class NowPerformanceSerializer(serializers.ModelSerializer):
     is_now = serializers.SerializerMethodField()
     
     def get_is_now(self, instance):
@@ -109,4 +111,3 @@ class nowPerformanceSerializer(serializers.ModelSerializer):
             'location',
             'is_now',
         ]
-        
