@@ -24,13 +24,13 @@ def trans_datetime_to_str(self, instance):
     sorted_days = sorted(days_set, key=lambda x: days_map.index(x))
     days_str = ', '.join(sorted_days)
 
-    date = self.context.get('date')
-    
+    # date = self.context.get('date')
+    date_param = self.context.get('request').query_params.get('date')
     # 운영시간 문자열로 변환
     # 파라미터로 전달된 date 값으로 운영시간을 찾음
     # date 파라미터를 받지 못했다면 오늘 날짜로 탐색
-    if date:
-        target_date = int(date)
+    if date_param:
+        target_date = int(date_param)
     else:
         target_date = int(datetime.today().day)
 
