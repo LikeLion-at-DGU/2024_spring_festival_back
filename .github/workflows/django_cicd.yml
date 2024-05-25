@@ -66,10 +66,6 @@ jobs:
         file: ./Dockerfile
         push: true
         tags: ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.DOCKERHUB_REPONAME }}
-        build-args: |
-            SECRET_KEY=${{ secrets.SECRET_KEY }}
-            DEBUG_VALUE=${{ secrets.DEBUG_VALUE }}
-            DJANGO_DEPLOY=${{ secrets.DJANGO_DEPLOY }}
           
   # closed에 대한 server deploy
   CD:
@@ -92,3 +88,5 @@ jobs:
           docker rm mua-dongguk-server
           docker image rm ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.DOCKERHUB_REPONAME }}
           docker run -d -v /home/django/media:/app/media -v /home/django/static:/app/static -e TZ=Asia/Seoul -p 8000:8000 --name mua-dongguk-server ${{ secrets.DOCKERHUB_USERNAME }}/${{ secrets.DOCKERHUB_REPONAME }}
+          docker exec -it mua-dongguk-server /bin/bash
+          python manage.py collectstatic --noinput
