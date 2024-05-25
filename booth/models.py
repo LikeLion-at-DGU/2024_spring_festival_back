@@ -62,7 +62,6 @@ class BoothImage(BaseImage):
 
 class Comment(models.Model):
     booth=models.ForeignKey(Booth, on_delete=models.CASCADE, related_name='comments')
-    writer=models.CharField(max_length=20)
     content=models.TextField()
     password=models.CharField(max_length=10, null=False, blank=False)
     created_at=models.DateTimeField(auto_now_add=True)
