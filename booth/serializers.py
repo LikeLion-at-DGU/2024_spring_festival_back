@@ -157,7 +157,6 @@ class LikeSerializer(serializers.ModelSerializer):
                 ]
 
 class CommentSerializer(serializers.ModelSerializer):
-    writer = serializers.CharField()
     password = serializers.CharField(write_only=True)
     content = serializers.CharField()
 
@@ -168,5 +167,5 @@ class CommentSerializer(serializers.ModelSerializer):
     
     class Meta:
         model = Comment
-        fields = ['id', 'writer', 'password','content', 'created_at']
+        fields = ['id', 'password','content', 'created_at']
 
