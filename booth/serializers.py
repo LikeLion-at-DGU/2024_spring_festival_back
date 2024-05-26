@@ -1,13 +1,13 @@
 from datetime import datetime
 from rest_framework import serializers
 
-from.models import Booth, BoothImage, BoothLike, Comment
+from.models import Booth, BoothImage, BoothLike, Comment, BoothLocationOperationTime
 from datetime import datetime, date
 from django.core.exceptions import ObjectDoesNotExist
 
 
 def trans_datetime_to_str(self, instance):
-    operation_times = instance.operation_times.all()
+    operation_times = instance.location_operation_times.all()
     if not operation_times:
         return ""
 
@@ -60,10 +60,16 @@ class BoothImageSerializer(serializers.ModelSerializer):
         model = BoothImage
         fields = ['image']
 
+class BoothLocationOperationTimeSerializer(serializers.ModelSerializer):
+    class Meta:
+        model = BoothLocationOperationTime
+        fields = ['location', 'latitude', 'longitude']
+
 class BoothListSerializer(serializers.ModelSerializer):
     like_cnt = serializers.IntegerField()
     thumbnail = serializers.SerializerMethodField()
     during = serializers.SerializerMethodField()
+    location_info = serializers.SerializerMethodField()
 
     def get_thumbnail(self, instance):
         request = self.context.get('request')
@@ -76,7 +82,19 @@ class BoothListSerializer(serializers.ModelSerializer):
     def get_during(self, instance):
         print(self.context.get('date'))
         return trans_datetime_to_str(self, instance)
-    
+
+    def get_location_info(self, instance):
+        date_param = self.context.get('request').query_params.get('date')
+        if date_param:
+            target_date = int(date_param)
+        else:
+            target_date = int(datetime.today().day)
+
+        location_operation_time = instance.location_operation_times.get(date__day=target_date)
+        if location_operation_time:
+            return BoothLocationOperationTimeSerializer(location_operation_time).data
+        return None
+
     class Meta:
         model = Booth
         fields = [
@@ -85,9 +103,7 @@ class BoothListSerializer(serializers.ModelSerializer):
             'thumbnail',
             'description',
             'operator',
-            'location',
-            'latitude',
-            'longitude',
+            'location_info',
             'like_cnt',
             'during',
         ]
@@ -97,6 +113,7 @@ class BoothSerializer(serializers.ModelSerializer):
     is_liked = serializers.SerializerMethodField()
     images = serializers.SerializerMethodField()
     during = serializers.SerializerMethodField()
+    location_info = serializers.SerializerMethodField()
 
     def get_is_liked(self, instance):
         request = self.context.get('request')
@@ -121,6 +138,18 @@ class BoothSerializer(serializers.ModelSerializer):
         
         except:
             return None
+        
+    def get_location_info(self, instance):
+        date_param = self.context.get('request').query_params.get('date')
+        if date_param:
+            target_date = int(date_param)
+        else:
+            target_date = int(datetime.today().day)
+
+        location_operation_time = instance.location_operation_times.get(date__day=target_date)
+        if location_operation_time:
+            return BoothLocationOperationTimeSerializer(location_operation_time).data
+        return None
 
     class Meta:
         model = Booth
@@ -129,9 +158,7 @@ class BoothSerializer(serializers.ModelSerializer):
             'name',
             'description',
             'operator',
-            'location',
-            'latitude',
-            'longitude',
+            'location_info',
             'during',
             'like_cnt',
             'is_liked',
