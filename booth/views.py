@@ -24,7 +24,7 @@ class BoothFilter(filters.FilterSet):
 
     class Meta:
         model = Booth
-        fields = ['location', 'type', 'date']
+        fields = ['type', 'date']
 
     def filter_by_date(self, queryset, name, value):
         try:
@@ -33,7 +33,7 @@ class BoothFilter(filters.FilterSet):
 
             # 입력된 일자에 해당하는 부스를 필터링
             queryset = queryset.filter(
-                operation_times__date__day=day,
+                location_operation_times__date__day=day,
             ).distinct()
 
             return queryset
