@@ -5,11 +5,15 @@ class BoothOperationTimeInline(admin.TabularInline):
     model = BoothOperationTime
     extra = 1
 
+class BoothImageInline(admin.TabularInline):
+    model = BoothImage
+    extra = 1
+
 class BoothAdmin(admin.ModelAdmin):
     list_display = ('name', 'type', 'location', 'operator', 'show_operation_times')
     list_filter = ('type', 'location', 'operator')
     search_fields = ('name', 'description', 'operator')
-    inlines = [BoothOperationTimeInline]
+    inlines = [BoothOperationTimeInline, BoothImageInline]
 
     def show_operation_times(self, obj):
         operation_times = obj.operation_times.all()
