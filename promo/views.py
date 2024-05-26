@@ -10,5 +10,7 @@ class PromotionViewSet(viewsets.GenericViewSet, mixins.ListModelMixin):
     serializer_class = PromotionSerializer
 
 class PromotionBannerViewSet(viewsets.GenericViewSet, mixins.ListModelMixin):
-    queryset = Promotion.objects.all()
+    queryset = Promotion.objects.filter(
+        promotionbannerimage__isnull=False
+    )
     serializer_class = PromotionBannerSerializer
