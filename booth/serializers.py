@@ -1,5 +1,6 @@
 from datetime import datetime
 from rest_framework import serializers
+from django.core.validators import RegexValidator
 
 from.models import Booth, BoothImage, BoothLike, Comment, BoothLocationOperationTime
 from datetime import datetime, date
@@ -188,7 +189,11 @@ class LikeSerializer(serializers.ModelSerializer):
                 ]
 
 class CommentSerializer(serializers.ModelSerializer):
-    password = serializers.CharField(write_only=True)
+    password = serializers.CharField(
+        max_length=4,
+        validators=[RegexValidator(regex='^\d{4}$', message='Error : Password must be a 4-digit number')]
+    , write_only=True)
+    
     content = serializers.CharField()
 
     def create(self, validated_data):
