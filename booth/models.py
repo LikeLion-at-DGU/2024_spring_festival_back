@@ -1,6 +1,6 @@
 from django.db import models
 from core.models import *
-
+from django.core.validators import RegexValidator
 # Create your models here.
 
 TYPE_CHOICES=(
@@ -63,7 +63,10 @@ class BoothImage(BaseImage):
 class Comment(models.Model):
     booth=models.ForeignKey(Booth, on_delete=models.CASCADE, related_name='comments')
     content=models.TextField()
-    password=models.CharField(max_length=10, null=False, blank=False)
+    password = models.CharField(
+        max_length=4,
+        validators=[RegexValidator(regex='^\d{4}$', message='Error : Password must be a 4-digit number')]
+    )
     created_at=models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
