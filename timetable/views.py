@@ -62,7 +62,7 @@ class TimetableViewSet(viewsets.GenericViewSet, mixins.ListModelMixin):
         return PerformanceSerializer
 
 class ArtistViewSet(viewsets.GenericViewSet, mixins.ListModelMixin, mixins.RetrieveModelMixin):
-    queryset = Artist.objects.all()
+    queryset = Artist.objects.all().order_by('id')
     serializer_class = ArtistSerializer
     filter_backends = [DjangoFilterBackend]
     filterset_class = ArtistFilter

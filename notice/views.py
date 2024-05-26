@@ -9,7 +9,7 @@ from rest_framework.decorators import action
 #     queryset = Notification.objects.all()
 
 class NotificationViewSet(viewsets.GenericViewSet, mixins.ListModelMixin):
-    queryset = Notification.objects.all()
+    queryset = Notification.objects.all().order_by('-id')
 
     def get_serializer_class(self):
         if self.action == 'list':
