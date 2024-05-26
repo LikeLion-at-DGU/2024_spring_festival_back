@@ -24,7 +24,7 @@ class BoothFilter(filters.FilterSet):
 
     class Meta:
         model = Booth
-        fields = ['location', 'type', 'date']
+        fields = ['type', 'date']
 
     def filter_by_date(self, queryset, name, value):
         try:
