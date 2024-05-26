@@ -88,8 +88,8 @@ class BoothListSerializer(serializers.ModelSerializer):
         if date_param:
             target_date = int(date_param)
         else:
-            target_date = int(datetime.today().day)
-
+            return None
+        
         location_operation_time = instance.location_operation_times.get(date__day=target_date)
         if location_operation_time:
             return BoothLocationOperationTimeSerializer(location_operation_time).data
@@ -144,7 +144,7 @@ class BoothSerializer(serializers.ModelSerializer):
         if date_param:
             target_date = int(date_param)
         else:
-            target_date = int(datetime.today().day)
+            return None
 
         location_operation_time = instance.location_operation_times.get(date__day=target_date)
         if location_operation_time:
