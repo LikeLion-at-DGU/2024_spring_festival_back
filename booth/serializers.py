@@ -99,7 +99,11 @@ class BoothSerializer(serializers.ModelSerializer):
     during = serializers.SerializerMethodField()
 
     def get_is_liked(self, instance):
-        return None
+        request = self.context.get('request')
+        if request:
+            booth_id = str(instance.id)
+            return booth_id in request.COOKIES.keys()
+        return False
 
     def get_during(self, instance):
         return trans_datetime_to_str(self, instance)
