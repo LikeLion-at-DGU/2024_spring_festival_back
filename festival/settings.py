@@ -44,8 +44,7 @@ INSTALLED_APPS = [
     # drf app
     'rest_framework',
     'django_filters',
-    'corsheaders',
-
+    
     # project app
     'core',
     'booth',
@@ -57,8 +56,8 @@ INSTALLED_APPS = [
 ]
 
 MIDDLEWARE = [
-    'corsheaders.middleware.CorsMiddleware',
-    'booth.middlewares.ClientTokenMiddleware',
+    # 'corsheaders.middleware.CorsMiddleware',
+    
     'django.middleware.security.SecurityMiddleware',
     'django.contrib.sessions.middleware.SessionMiddleware',
     'django.middleware.common.CommonMiddleware',
@@ -66,6 +65,7 @@ MIDDLEWARE = [
     'django.contrib.auth.middleware.AuthenticationMiddleware',
     'django.contrib.messages.middleware.MessageMiddleware',
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
+    'booth.middlewares.ClientTokenMiddleware',
 ]
 
 ROOT_URLCONF = 'festival.urls'
@@ -199,24 +199,3 @@ REST_FRAMEWORK = {
         'likes': '100/minute',
     }
 }
-
-CORS_ALLOW_METHODS = [
-    'DELETE',
-    'GET',
-    'OPTIONS',
-    'PATCH',
-    'POST',
-    'PUT',
-]
-
-CORS_ALLOW_HEADERS = [
-    'accept',
-    'accept-encoding',
-    'authorization',
-    'content-type',
-    'dnt',
-    'origin',
-    'user-agent',
-    'x-csrftoken',
-    'x-requested-with',
-]
