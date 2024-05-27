@@ -118,7 +118,7 @@ class BoothViewSet(viewsets.GenericViewSet, mixins.ListModelMixin, mixins.Retrie
             booth_like = BoothLike.objects.create(booth=booth, key=key, fingerprint=fingerprint)
             serializer = LikeSerializer(booth_like)
             response = Response(serializer.data)
-            response.set_cookie(booth_id, key, max_age=5*24*60*60, httponly=True)
+            response.set_cookie(booth_id, key, max_age=5*24*60*60, httponly=True, secure=True, samesite=None)
             return response
         
         elif request.method == 'DELETE':

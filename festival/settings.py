@@ -199,3 +199,11 @@ REST_FRAMEWORK = {
         'likes': '100/minute',
     }
 }
+
+# CSRF 쿠키 설정
+CSRF_COOKIE_SECURE = True
+CSRF_COOKIE_SAMESITE = 'None'
+
+# 세션 쿠키 설정
+SESSION_COOKIE_SECURE = True
+SESSION_COOKIE_SAMESITE = 'None'
