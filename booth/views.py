@@ -151,7 +151,7 @@ class CommentViewSet(mixins.ListModelMixin, mixins.CreateModelMixin, mixins.Dest
 
         password = request.data.get('password')
 
-        data = request.data.copy()
+        data = dict()
         data['content'] = censored_content
         data['password'] = password
 
