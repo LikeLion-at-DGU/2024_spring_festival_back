@@ -118,7 +118,7 @@ class BoothViewSet(viewsets.GenericViewSet, mixins.ListModelMixin, mixins.Retrie
             booth_like = BoothLike.objects.create(booth=booth, key=key, fingerprint=fingerprint)
             serializer = LikeSerializer(booth_like)
             response = Response(serializer.data)
-            response.set_cookie(booth_id, key, max_age=5*24*60*60, httponly=True, secure=True, samesite='none')
+            response.set_cookie(booth_id, key, max_age=5*24*60*60, domain='.dgu-mua.site', httponly=True, secure=True, samesite='none')
             return response
         
         elif request.method == 'DELETE':
@@ -131,7 +131,7 @@ class BoothViewSet(viewsets.GenericViewSet, mixins.ListModelMixin, mixins.Retrie
             if booth_like.exists():
                 booth_like.delete()
                 response = Response({'message': '좋아요가 취소되었습니다.'})
-                response.delete_cookie(booth_id, samesite='none')
+                response.delete_cookie(booth_id, domain='.dgu-mua.site', samesite='none')
                 return response
             else:
                 return Response({'error': '해당 부스에 대한 좋아요를 찾을 수 없습니다.'}, status=status.HTTP_400_BAD_REQUEST)
