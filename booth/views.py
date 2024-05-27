@@ -145,24 +145,24 @@ class CommentViewSet(mixins.ListModelMixin, mixins.CreateModelMixin, mixins.Dest
         )
         return queryset
     
-    def create(self, request, *args, **kwargs):
-        #사용자가 작성한 댓글 내용 중 욕설 있는지 필터링
-        content = request.data.get('content')
-        censored_content = censor_content(content)
+    # def create(self, request, *args, **kwargs):
+    #     #사용자가 작성한 댓글 내용 중 욕설 있는지 필터링
+    #     content = request.data.get('content')
+    #     censored_content = censor_content(content)
 
-        password = request.data.get('password')
-        hashed_password = make_password(password)
+    #     password = request.data.get('password')
+    #     hashed_password = make_password(password)
 
-        data = request.data.copy()
-        data['content'] = censored_content
-        data['password'] = hashed_password
+    #     data = request.data.copy()
+    #     data['content'] = censored_content
+    #     data['password'] = hashed_password
 
-        serializer = self.get_serializer(data=data)
-        serializer.is_valid(raise_exception=True)
-        self.perform_create(serializer)
+    #     serializer = self.get_serializer(data=data)
+    #     serializer.is_valid(raise_exception=True)
+    #     self.perform_create(serializer)
 
-        headers = self.get_success_headers(serializer.data)
-        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+    #     headers = self.get_success_headers(serializer.data)
+    #     return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
 
     def destroy(self, request, *args, **kwargs):
         instance = self.get_object()
