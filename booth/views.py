@@ -1,4 +1,6 @@
 import secrets
+import os
+import re
 
 from decouple import config
 
@@ -9,6 +11,7 @@ from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import viewsets, mixins, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
+from django.contrib.auth.hashers import make_password
 
 from .models import Booth, BoothLike, TYPE_CHOICES, Comment
 
@@ -17,6 +20,19 @@ from .serializers import BoothListSerializer, BoothSerializer, LikeSerializer, C
 # Create your views here.
 
 DEPLOY = config('DJANGO_DEPLOY', default=False, cast=bool)
+
+def get_fword_list():
+    with open(os.path.join('static', 'fword_list.txt'), 'r', encoding='utf-8') as file:
+        fword_list = file.read().splitlines()
+    return fword_list
+
+def censor_content(content):
+    fword_list = get_fword_list()
+    pattern_list = [re.escape(word).replace(r'\ ', r'\s*') for word in fword_list]
+    pattern = re.compile('|'.join(pattern_list), re.IGNORECASE)
+    censored_content = pattern.sub(lambda x: '*' * len(x.group()), content)
+    return censored_content
+
 
 class BoothFilter(filters.FilterSet):
     type = filters.MultipleChoiceFilter(field_name='type', choices=TYPE_CHOICES)
@@ -128,6 +144,25 @@ class CommentViewSet(mixins.ListModelMixin, mixins.CreateModelMixin, mixins.Dest
             booth__id=self.kwargs.get("id")
         )
         return queryset
+    
+    def create(self, request, *args, **kwargs):
+        #사용자가 작성한 댓글 내용 중 욕설 있는지 필터링
+        content = request.data.get('content')
+        censored_content = censor_content(content)
+
+        password = request.data.get('password')
+        hashed_password = make_password(password)
+
+        data = request.data.copy()
+        data['content'] = censored_content
+        data['password'] = hashed_password
+
+        serializer = self.get_serializer(data=data)
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
+
+        headers = self.get_success_headers(serializer.data)
+        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
 
     def destroy(self, request, *args, **kwargs):
         instance = self.get_object()
@@ -136,3 +171,4 @@ class CommentViewSet(mixins.ListModelMixin, mixins.CreateModelMixin, mixins.Dest
             self.perform_destroy(instance)
             return Response(status=status.HTTP_204_NO_CONTENT)
         return Response(status=400)
+
