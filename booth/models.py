@@ -53,6 +53,7 @@ class BoothLike(models.Model):
         blank=True,
         editable=False
     )
+    fingerprint = models.CharField(max_length=64, default="None")  # SHA-256 해시 길이
     create_at = models.DateTimeField(auto_now_add=True)
     def __str__(self):
         return f'{self.booth}/{self.key}'

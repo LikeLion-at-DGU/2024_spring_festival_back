@@ -33,6 +33,16 @@ def censor_content(content):
     censored_content = pattern.sub(lambda x: '*' * len(x.group()), content)
     return censored_content
 
+# 유저 판별을 위한 유저정보 해시화
+import hashlib
+def get_user_fingerprint(request):
+    user_agent = request.META.get('HTTP_USER_AGENT', '')
+    user_ip = request.META.get('REMOTE_ADDR', '')
+    client_token = request.META.get('client_token', '')
+    if client_token == None:
+        return None
+    raw_fingerprint = f'{user_agent}{user_ip}{client_token}'
+    return hashlib.sha256(raw_fingerprint.encode()).hexdigest()
 
 class BoothFilter(filters.FilterSet):
     type = filters.MultipleChoiceFilter(field_name='type', choices=TYPE_CHOICES)
@@ -94,29 +104,34 @@ class BoothViewSet(viewsets.GenericViewSet, mixins.ListModelMixin, mixins.Retrie
         booth = self.get_object()
         booth_id = str(booth.id)
 
+        fingerprint = get_user_fingerprint(request)
+        if fingerprint is None:
+            return Response({'error': '유저 정보를 식별할 수 없습니다.'}, status=status.HTTP_400_BAD_REQUEST)
+            
         if request.method == 'POST':
             if booth_id in request.COOKIES:
                 return Response({'error': '이미 좋아요를 눌렀습니다.'}, status=status.HTTP_400_BAD_REQUEST)
+            
+            if BoothLike.objects.filter(booth=booth, fingerprint=fingerprint).exists():
+                return Response({'error': '이미 좋아요를 눌렀습니다.'}, status=status.HTTP_400_BAD_REQUEST)
+
             key = secrets.token_hex(5)
-            booth_like = BoothLike.objects.create(booth=booth, key=key)
+            booth_like = BoothLike.objects.create(booth=booth, key=key, fingerprint=fingerprint)
             serializer = LikeSerializer(booth_like)
             response = Response(serializer.data)
-            # 3일간 쿠키 유효 / Deploy시 secure=True로 바꿀것
-            response.set_cookie(booth_id, key, max_age=3*24*60*60, secure=DEPLOY, httponly=True)  
-            
+            response.set_cookie(booth_id, key, max_age=5*24*60*60, httponly=True)
             return response
         
         elif request.method == 'DELETE':
-            # cookie가 booth_id를 가지고 있지 않은 경우
             if booth_id not in request.COOKIES:
                 return Response({'error': '좋아요를 누르지 않았습니다.'}, status=status.HTTP_400_BAD_REQUEST)
-            
+
             key = request.COOKIES[booth_id]
             booth_like = BoothLike.objects.filter(booth=booth, key=key)
 
             if booth_like.exists():
                 booth_like.delete()
-                response = Response({'message': '좋아요가 취소되었습니다. 쿠키가 삭제되었습니다.'})
+                response = Response({'message': '좋아요가 취소되었습니다.'})
                 response.delete_cookie(booth_id)
                 return response
             else:
