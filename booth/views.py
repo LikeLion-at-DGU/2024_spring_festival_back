@@ -37,10 +37,10 @@ import hashlib
 def get_user_fingerprint(request):
     user_agent = request.META.get('HTTP_USER_AGENT', '')
     user_ip = request.META.get('REMOTE_ADDR', '')
-    client_token = request.META.get('client_token', '')
-    if client_token == None:
-        return None
-    raw_fingerprint = f'{user_agent}{user_ip}{client_token}'
+    # client_token = request.META.get('client_token', '')
+    # if client_token == None:
+    #     return None
+    raw_fingerprint = f'{user_agent}{user_ip}'
     return hashlib.sha256(raw_fingerprint.encode()).hexdigest()
 
 class BoothFilter(filters.FilterSet):
@@ -104,8 +104,8 @@ class BoothViewSet(viewsets.GenericViewSet, mixins.ListModelMixin, mixins.Retrie
         booth_id = str(booth.id)
 
         fingerprint = get_user_fingerprint(request)
-        if fingerprint is None:
-            return Response({'error': '유저 정보를 식별할 수 없습니다.'}, status=status.HTTP_400_BAD_REQUEST)
+        # if fingerprint is None:
+        #     return Response({'error': '유저 정보를 식별할 수 없습니다.'}, status=status.HTTP_400_BAD_REQUEST)
             
         if request.method == 'POST':
             if booth_id in request.COOKIES:
