@@ -1,6 +1,7 @@
 from django.db import models
 from core.models import *
 from django.core.validators import RegexValidator
+from django.utils import timezone
 # Create your models here.
 
 TYPE_CHOICES=(
@@ -52,7 +53,7 @@ class BoothLike(models.Model):
         blank=True,
         editable=False
     )
-
+    create_at = models.DateTimeField(default=timezone.now)
     def __str__(self):
         return f'{self.booth}/{self.key}'
 
