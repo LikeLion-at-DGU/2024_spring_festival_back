@@ -81,7 +81,6 @@ class BoothListSerializer(serializers.ModelSerializer):
         return None
     
     def get_during(self, instance):
-        print(self.context.get('date'))
         return trans_datetime_to_str(self, instance)
 
     def get_location_info(self, instance):
