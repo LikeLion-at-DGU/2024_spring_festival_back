@@ -131,7 +131,7 @@ class BoothViewSet(viewsets.GenericViewSet, mixins.ListModelMixin, mixins.Retrie
             if booth_like.exists():
                 booth_like.delete()
                 response = Response({'message': '좋아요가 취소되었습니다.'})
-                response.delete_cookie(booth_id)
+                response.delete_cookie(booth_id, samesite='none')
                 return response
             else:
                 return Response({'error': '해당 부스에 대한 좋아요를 찾을 수 없습니다.'}, status=status.HTTP_400_BAD_REQUEST)
