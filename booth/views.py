@@ -11,7 +11,6 @@ from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework import viewsets, mixins, status
 from rest_framework.decorators import action
 from rest_framework.response import Response
-from django.contrib.auth.hashers import make_password
 
 from .models import Booth, BoothLike, TYPE_CHOICES, Comment
 
@@ -145,24 +144,23 @@ class CommentViewSet(mixins.ListModelMixin, mixins.CreateModelMixin, mixins.Dest
         )
         return queryset
     
-    # def create(self, request, *args, **kwargs):
-    #     #사용자가 작성한 댓글 내용 중 욕설 있는지 필터링
-    #     content = request.data.get('content')
-    #     censored_content = censor_content(content)
+    def create(self, request, *args, **kwargs):
+        #사용자가 작성한 댓글 내용 중 욕설 있는지 필터링
+        content = request.data.get('content')
+        censored_content = censor_content(content)
 
-    #     password = request.data.get('password')
-    #     hashed_password = make_password(password)
+        password = request.data.get('password')
 
-    #     data = request.data.copy()
-    #     data['content'] = censored_content
-    #     data['password'] = hashed_password
+        data = request.data.copy()
+        data['content'] = censored_content
+        data['password'] = password
 
-    #     serializer = self.get_serializer(data=data)
-    #     serializer.is_valid(raise_exception=True)
-    #     self.perform_create(serializer)
+        serializer = self.get_serializer(data=data)
+        serializer.is_valid(raise_exception=True)
+        self.perform_create(serializer)
 
-    #     headers = self.get_success_headers(serializer.data)
-    #     return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
+        headers = self.get_success_headers(serializer.data)
+        return Response(serializer.data, status=status.HTTP_201_CREATED, headers=headers)
 
     def destroy(self, request, *args, **kwargs):
         instance = self.get_object()
