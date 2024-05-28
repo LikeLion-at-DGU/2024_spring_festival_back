@@ -144,6 +144,24 @@ class BoothViewSet(viewsets.GenericViewSet, mixins.ListModelMixin, mixins.Retrie
                 return response
             else:
                 return Response({'error': '해당 부스에 대한 좋아요를 찾을 수 없습니다.'}, status=status.HTTP_400_BAD_REQUEST)
+            
+
+    @action(methods=['GET'], detail=True)
+    def likestatus(self, request, pk=None):
+        booth = self.get_object()
+        booth_id = str(booth.id)
+
+        fingerprint = get_user_fingerprint(request)
+
+        try:
+            booth_like = BoothLike.objects.get(booth=booth, fingerprint = fingerprint)
+            key = booth_like.key
+            serializer = LikeSerializer(booth_like)
+            response = Response(serializer.data)
+            response.set_cookie(booth_id, key, max_age=5*24*60*60, domain='.dgu-mua.site', httponly=True, secure=True, samesite='none')
+            return response
+        except:
+            return Response({'error': '해당 부스에 대한 좋아요를 찾을 수 없습니다.'}, status=status.HTTP_400_BAD_REQUEST)
 
     # @action(detail=True, methods=['GET'], url_path='location')
     # def location(self, request, pk=None):
