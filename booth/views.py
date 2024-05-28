@@ -122,10 +122,19 @@ class BoothViewSet(viewsets.GenericViewSet, mixins.ListModelMixin, mixins.Retrie
             return response
         
         elif request.method == 'DELETE':
-            if booth_id not in request.COOKIES:
-                return Response({'error': '좋아요를 누르지 않았습니다.'}, status=status.HTTP_400_BAD_REQUEST)
+            # 쿠키 사용이 불안정하여 쿠키를 이용하는 부분은 최소화함
+            # if booth_id not in request.COOKIES:
+            #     return Response({'error': '좋아요를 누르지 않았습니다.'}, status=status.HTTP_400_BAD_REQUEST)
 
-            key = request.COOKIES[booth_id]
+            authorization_header = request.headers.get('Authorization')
+            if authorization_header:
+                bearer_token = authorization_header.split(' ')[1]  # "Bearer" 다음의 실제 토큰 값 추출
+            else:
+                bearer_token = None
+            
+            # key = request.COOKIES[booth_id]
+            key = bearer_token
+            
             booth_like = BoothLike.objects.filter(booth=booth, key=key)
 
             if booth_like.exists():
